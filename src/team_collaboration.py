@@ -12,7 +12,7 @@ TEAM_REGISTRY = {
             "name": "PIEKARZ Mathieu Xavier",
             "student_id": "00647375",
             "role": "Lead Data Engineer", # e.g., ML Engineer, Data Quality Auditor
-            "assigned_reviewer": "DE TALHOUET Théophile",
+            "assigned_reviewer": "Barrau Maxence",
             "git_feature_branch": "feature/activity-10-mathieu-piekarz",
             "preferred_ai_assistant": "GitHub Copilot in VS Code",
             "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
