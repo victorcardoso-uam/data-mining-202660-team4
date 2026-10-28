@@ -89,6 +89,9 @@ Un notebook par étape, dans `nasa-project/notebooks/`. Les figures et tableaux 
 | Étape | Notebook | Sorties |
 |---|---|---|
 | 2. Analyse exploratoire | `nasa-project/notebooks/02_eda.ipynb` | `nasa-project/reports/02_eda/` |
+| 3. Preprocessing sans fuite | `nasa-project/notebooks/03_preprocessing.ipynb` | `nasa-project/reports/03_preprocessing/` et `nasa-project/data/processed/03_preprocessing/` |
+
+Les notebooks se lancent **dans l'ordre** : à partir de l'étape 3, chaque notebook enregistre dans `nasa-project/data/processed/` (non versionné) les jeux train/test et les préprocesseurs utilisés par les étapes suivantes. Après un `git clone`, exécutez donc `03_preprocessing.ipynb` avant les notebooks 04 et 05.
 
 ### Option A : VS Code (recommandé)
 
@@ -139,9 +142,39 @@ Commitez ensuite `pyproject.toml` et `uv.lock`. Les coéquipiers n'ont plus qu'�
 
 Ne commitez jamais le dossier `.venv/` : il est propre à chaque machine et déjà ignoré par `.gitignore`.
 
+## Problèmes fréquents
+
+### Windows et OneDrive : `failed to hardlink file` (os error 396)
+
+Par défaut, uv crée des liens physiques (« hardlinks ») entre son cache et le `.venv`. OneDrive ne les accepte pas, ce qui produit l'erreur « Impossible d'exécuter l'opération de cloud sur un fichier comportant des liaisons permanentes ».
+
+Pour corriger, demandez à uv de copier les fichiers au lieu de les lier. Dans PowerShell :
+
+```powershell
+[System.Environment]::SetEnvironmentVariable("UV_LINK_MODE", "copy", "User")
+```
+
+Fermez puis rouvrez le terminal (et VS Code), videz le cache abîmé, puis relancez :
+
+```powershell
+uv cache clean
+uv sync
+```
+
+Pour la session en cours uniquement : `$env:UV_LINK_MODE = "copy"`.
+
+Sur macOS et Linux, l'équivalent est `export UV_LINK_MODE=copy`, à ajouter dans `~/.zshrc` ou `~/.bashrc` pour le rendre permanent.
+
 ## Constats clés de l'EDA
 
 - `pha` est égal à la règle MOID ≤ 0,05 UA et H ≤ 22 pour 99,9 % des objets. Il faut exclure MOID, H et les colonnes dérivées de H si `pha` est la cible.
 - 97 % des diamètres sont calculés à partir de H avec un albédo fixe de 0,14. Seuls 1 246 diamètres sont réellement mesurés.
 - La chute des approches après mars 2026 vient de la date d'extraction : les objets pas encore découverts n'ont pas de prévisions.
 - 80 % des objets n'ont qu'une seule approche dans la fenêtre 2015–2035.
+
+## Constats clés du preprocessing
+
+- Variables retenues pour la classification : éléments orbitaux `a, e, i, q, ad` et famille `class`. MOID, H, diamètre, `size_category` et albédo sont exclus.
+- `data_arc_years`, `condition_code` et `first_obs_year` sont des proxys de la taille (|ρ| avec H jusqu'à 0,77). Ils forment une variante testée séparément.
+- Audit de fuite en validation croisée (PR-AUC, hasard = 0,06) : H + MOID = 1,00 (fuite), orbite seule = 0,15, orbite + observation = 0,48.
+- Régression du diamètre : 1 244 diamètres mesurés, albédo exclu. Les objets mesurés sont nettement plus gros que ceux à prédire (H médian 19 contre 24).
