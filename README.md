@@ -90,8 +90,9 @@ Un notebook par étape, dans `nasa-project/notebooks/`. Les figures et tableaux 
 |---|---|---|
 | 2. Analyse exploratoire | `nasa-project/notebooks/02_eda.ipynb` | `nasa-project/reports/02_eda/` |
 | 3. Preprocessing sans fuite | `nasa-project/notebooks/03_preprocessing.ipynb` | `nasa-project/reports/03_preprocessing/` et `nasa-project/data/processed/03_preprocessing/` |
+| 4. Régression du diamètre | `nasa-project/notebooks/04_diameter_regression.ipynb` | `nasa-project/reports/04_diameter/` et `nasa-project/data/processed/04_diameter/` |
 
-Les notebooks se lancent **dans l'ordre** : à partir de l'étape 3, chaque notebook enregistre dans `nasa-project/data/processed/` (non versionné) les jeux train/test et les préprocesseurs utilisés par les étapes suivantes. Après un `git clone`, exécutez donc `03_preprocessing.ipynb` avant les notebooks 04 et 05.
+Les notebooks se lancent **dans l'ordre** : à partir de l'étape 3, chaque notebook enregistre dans `nasa-project/data/processed/` (non versionné) les jeux train/test et les préprocesseurs utilisés par les étapes suivantes. Après un `git clone`, exécutez donc les notebooks dans l'ordre (03, puis 04, puis 05…).
 
 ### Option A : VS Code (recommandé)
 
@@ -178,3 +179,11 @@ Sur macOS et Linux, l'équivalent est `export UV_LINK_MODE=copy`, à ajouter dan
 - `data_arc_years`, `condition_code` et `first_obs_year` sont des proxys de la taille (|ρ| avec H jusqu'à 0,77). Ils forment une variante testée séparément.
 - Audit de fuite en validation croisée (PR-AUC, hasard = 0,06) : H + MOID = 1,00 (fuite), orbite seule = 0,15, orbite + observation = 0,48.
 - Régression du diamètre : 1 244 diamètres mesurés, albédo exclu. Les objets mesurés sont nettement plus gros que ceux à prédire (H médian 19 contre 24).
+
+## Constats clés de la régression du diamètre
+
+- Modèle retenu : Random Forest « guidé par la physique ». Il garde la loi exacte log D = constante − H/5 et n'apprend que le terme d'albédo, à partir de H et de l'orbite.
+- Sur le test, par rapport à la formule du catalogue (albédo 0,14) : RMSE de 0,222 à 0,203 dex, et les erreurs d'un facteur supérieur à 2 passent de 20 % à 12 %. Précision équivalente au modèle linéaire, mais la forêt n'extrapole pas de tendance absurde aux petits objets.
+- Les objets dont l'orbite s'étend au-delà de 2,17 UA sont plus sombres (albédo ≈ 0,07) : la formule du catalogue sous-estime leur diamètre.
+- Intervalle à 90 % : de ×0,52 à ×2,14 autour du diamètre prédit (couverture de 88 % sur le test). La borne haute sert de diamètre pessimiste pour l'étape 7.
+- 41 % du catalogue est plus petit que 98 % des objets d'entraînement (H > 24,7) et porte le drapeau `hors_domaine`.
