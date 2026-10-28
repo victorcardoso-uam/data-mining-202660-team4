@@ -21,9 +21,9 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 tree_candidates = [
-	("α_1 (Unconstrained)", 0.001),
-	("α_2 (Optimal Pruned)", 0.015),
-	("α_3 (Over-Pruned)", 0.080),
+	("alpha_1 (Unconstrained)", 0.001),
+	("alpha_2 (Optimal Pruned)", 0.015),
+	("alpha_3 (Over-Pruned)", 0.080),
 ]
 model_results = []
 
@@ -38,7 +38,7 @@ for candidate_name, ccp_alpha in tree_candidates:
 	total_cost = test_error + ccp_alpha * leaf_count
 	model_results.append(
 		{
-			"Candidate α": candidate_name,
+			"Candidate alpha": candidate_name,
 			"ccp_alpha": ccp_alpha,
 			"Value": total_cost,
 			"Leaf Count(|T|)": leaf_count,
@@ -68,7 +68,7 @@ print(
 )
 
 summary_table = pd.DataFrame(model_results)
-print("\nModel Summary Table (Value = R_test + ccp_alpha × |T|):")
+print("\nModel Summary Table (Value = R_test + ccp_alpha * |T|):")
 print(
 	summary_table.to_string(
 		index=False,
