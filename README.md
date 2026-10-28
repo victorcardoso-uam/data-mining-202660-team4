@@ -91,6 +91,7 @@ Un notebook par étape, dans `nasa-project/notebooks/`. Les figures et tableaux 
 | 2. Analyse exploratoire | `nasa-project/notebooks/02_eda.ipynb` | `nasa-project/reports/02_eda/` |
 | 3. Preprocessing sans fuite | `nasa-project/notebooks/03_preprocessing.ipynb` | `nasa-project/reports/03_preprocessing/` et `nasa-project/data/processed/03_preprocessing/` |
 | 4. Régression du diamètre | `nasa-project/notebooks/04_diameter_regression.ipynb` | `nasa-project/reports/04_diameter/` et `nasa-project/data/processed/04_diameter/` |
+| 5. Classification et priorisation | `nasa-project/notebooks/05_classification.ipynb` | `nasa-project/reports/05_classification/` et `nasa-project/data/processed/05_classification/` |
 
 Les notebooks se lancent **dans l'ordre** : à partir de l'étape 3, chaque notebook enregistre dans `nasa-project/data/processed/` (non versionné) les jeux train/test et les préprocesseurs utilisés par les étapes suivantes. Après un `git clone`, exécutez donc les notebooks dans l'ordre (03, puis 04, puis 05…).
 
@@ -187,3 +188,11 @@ Sur macOS et Linux, l'équivalent est `export UV_LINK_MODE=copy`, à ajouter dan
 - Les objets dont l'orbite s'étend au-delà de 2,17 UA sont plus sombres (albédo ≈ 0,07) : la formule du catalogue sous-estime leur diamètre.
 - Intervalle à 90 % : de ×0,52 à ×2,14 autour du diamètre prédit (couverture de 88 % sur le test). La borne haute sert de diamètre pessimiste pour l'étape 7.
 - 41 % du catalogue est plus petit que 98 % des objets d'entraînement (H > 24,7) et porte le drapeau `hors_domaine`.
+
+## Constats clés de la classification
+
+- Cible : `pha`, prédit sans H ni MOID. Modèle retenu : Random Forest sur l'orbite et les variables d'observation, avec `class_weight="balanced_subsample"`. Le notebook prend environ 5 minutes à s'exécuter (recherche en grille).
+- Le seuil de décision est choisi sur le train pour atteindre 99 % de rappel (seuil ≈ 0,055 au lieu de 0,5).
+- Sur le test : 99 % des PHA attrapés (5 ratés sur 508) en surveillant 33 % du catalogue, contre 73 % avec la règle « l'orbite croise celle de la Terre » et 99 % au hasard.
+- Avec l'orbite seule, il faut surveiller 72 % du catalogue pour le même rappel : l'essentiel du gain vient des variables d'observation, en partie parce qu'elles reflètent la taille.
+- Les PHA ratés sont presque tous des objets découverts depuis quelques jours ou semaines : ils doivent être surveillés systématiquement, quel que soit leur score.
