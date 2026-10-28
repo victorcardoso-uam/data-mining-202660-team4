@@ -1,0 +1,66 @@
+{
+  "random_state": 42,
+  "test_size": 0.2,
+  "classification": {
+    "target": "pha",
+    "features_orbit": {
+      "numeric": [
+        "a",
+        "e",
+        "i",
+        "q",
+        "ad"
+      ],
+      "categorical": [
+        "class"
+      ]
+    },
+    "features_orbit_obs": {
+      "numeric": [
+        "a",
+        "e",
+        "i",
+        "q",
+        "ad",
+        "condition_code",
+        "data_arc_years",
+        "first_obs_year"
+      ],
+      "categorical": [
+        "class"
+      ]
+    },
+    "forbidden": [
+      "H",
+      "moid_au",
+      "moid_km",
+      "moid_lunar_distances",
+      "diameter_km",
+      "diameter_m",
+      "size_category",
+      "albedo"
+    ]
+  },
+  "diameter_regression": {
+    "target": "log10_diameter_km",
+    "rows": "diameter_is_estimated == False",
+    "features": {
+      "numeric": [
+        "H",
+        "a",
+        "e",
+        "i",
+        "q",
+        "ad"
+      ],
+      "categorical": [
+        "class"
+      ]
+    },
+    "forbidden": [
+      "albedo",
+      "diameter_m",
+      "size_category"
+    ]
+  }
+}
