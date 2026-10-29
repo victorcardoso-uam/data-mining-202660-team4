@@ -93,6 +93,7 @@ Un notebook par étape, dans `nasa-project/notebooks/`. Les figures et tableaux 
 | 4. Régression du diamètre | `nasa-project/notebooks/04_diameter_regression.ipynb` | `nasa-project/reports/04_diameter/` et `nasa-project/data/processed/04_diameter/` |
 | 5. Classification et priorisation | `nasa-project/notebooks/05_classification.ipynb` | `nasa-project/reports/05_classification/` et `nasa-project/data/processed/05_classification/` |
 | 6. Clustering des profils de risque | `nasa-project/notebooks/06_clustering.ipynb` | `nasa-project/reports/06_clustering/` et `nasa-project/data/processed/06_clustering/` |
+| 7. Politique de priorisation | `nasa-project/notebooks/07_risk_policy.ipynb` | `nasa-project/reports/07_risk_policy/` et `nasa-project/data/processed/07_risk_policy/file_priorite.csv` |
 
 Les notebooks se lancent **dans l'ordre** : à partir de l'étape 3, chaque notebook enregistre dans `nasa-project/data/processed/` (non versionné) les jeux train/test et les préprocesseurs utilisés par les étapes suivantes. Après un `git clone`, exécutez donc les notebooks dans l'ordre (03, puis 04, puis 05…).
 
@@ -206,3 +207,13 @@ Sur macOS et Linux, l'équivalent est `export UV_LINK_MODE=copy`, à ajouter dan
 - Les clusters ne redécouvrent pas les familles orbitales (ARI ≈ 0,08) : trois sur quatre mélangent Apollo et Amor à parts égales.
 - Le cluster des gros objets proches de l'écliptique contient 64 % des PHA du catalogue : il justifie une campagne de suivi prioritaire.
 - Le cluster des petits objets frôleurs (MOID médian 0,005 UA) contient 44 % d'objets passés ou attendus à moins de 5 distances lunaires, mais seulement 1 % de PHA : suivi réactif à la découverte.
+
+## Constats clés de la politique de priorisation
+
+- Trois niveaux : niveau 1 (observer ce cycle), niveau 2 (prochain cycle), niveau 3 (surveillance passive). Tous les seuils sont regroupés dans la première cellule du notebook.
+- Niveau 1 = PHA probable (MOID ≤ 0,05 UA et diamètre estimé ≥ 140 m) **et** urgent (approche à moins de 20 distances lunaires d'ici 2035, orbite incertaine avec `condition_code` ≥ 7, ou découverte depuis moins d'un an) : 730 objets (1,8 % du catalogue).
+- Niveau 2 = PHA probables non urgents, PHA possibles (seule la borne haute du diamètre dépasse 140 m) et découvertes récentes signalées par le modèle de l'étape 5 : 4 880 objets (11,8 %).
+- 99,5 % des PHA officiels sont en niveau 1 ou 2. Les 12 autres ont un diamètre mesuré inférieur à 140 m.
+- La politique ajoute 662 PHA probables et 2 184 PHA possibles absents de la liste officielle, car plus sombres que l'albédo de 0,14 supposé.
+- Temps de télescope (hypothèses illustratives) : 81 % de moins que « tout surveiller », 74 % de moins que la règle d'expert, environ 50 % de plus que la liste officielle, mais réparti selon l'urgence.
+- `file_priorite.csv` classe tout le catalogue avec les raisons de chaque décision : c'est la source de données prévue pour le Streamlit.
