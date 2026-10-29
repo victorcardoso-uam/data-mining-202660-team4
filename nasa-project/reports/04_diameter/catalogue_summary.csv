@@ -1,0 +1,8 @@
+indicator,value
+Objects in the catalogue,"41,281"
+Measured diameters (kept as is),"1,246"
+Diameters predicted by the model,"40,035"
+of which out of domain (H > limit),"16,883"
+Objects ≥ 140 m according to the catalogue,"11,667"
+Objects ≥ 140 m according to the model,"14,020"
+Objects ≥ 140 m according to the upper bound (pessimistic),"20,059"

@@ -1,9 +1,0 @@
-{
-  "q_low_dex": -0.2872846090013316,
-  "q_high_dex": 0.3298694694353778,
-  "H_limit": 24.67,
-  "best_params": {
-    "model__max_features": 1.0,
-    "model__min_samples_leaf": 20
-  }
-}

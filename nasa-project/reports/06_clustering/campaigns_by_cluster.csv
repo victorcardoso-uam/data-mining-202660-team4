@@ -1,0 +1,5 @@
+cluster,profile,objects,median_diameter_m,median_moid_AU,median_inclination,pha_share,share_of_all_phas,follow-up strategy
+0,Small close approachers,11002,18.581614502359052,0.00475,4.03,0.009725504453735684,0.04214257581725089,"Mostly detected during very close passes. Rapid follow-up right after discovery, then passive surveillance."
+1,Small objects at moderate distance,10845,41.89790473248742,0.0465,11.29,0.022222222222222223,0.09491925955100433,Low individual risk. Passive surveillance by automated surveys.
+2,Large objects near the ecliptic,13288,162.879518769943,0.07844999999999999,7.485,0.12229078868151716,0.6400157542339504,"Main reservoir of PHAs. Priority, recurring follow-up campaign."
+3,Large highly inclined objects,6015,383.3643401504456,0.17,28.47,0.0940980881130507,0.2229224103977944,"Large but distant on average. Hard-to-reach orbits: regular astrometric follow-up, specific observing windows."

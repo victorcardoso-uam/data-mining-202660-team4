@@ -1,0 +1,8 @@
+{
+  "recall_target": 0.99,
+  "thresholds": {
+    "Random Forest \u2013 Orbit + observation": 0.0547419418530119,
+    "Random Forest \u2013 Orbit": 0.06180374197962899
+  },
+  "chosen_model": "Random Forest \u2013 Orbit + observation"
+}
