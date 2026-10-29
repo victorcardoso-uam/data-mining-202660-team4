@@ -92,6 +92,7 @@ Un notebook par étape, dans `nasa-project/notebooks/`. Les figures et tableaux 
 | 3. Preprocessing sans fuite | `nasa-project/notebooks/03_preprocessing.ipynb` | `nasa-project/reports/03_preprocessing/` et `nasa-project/data/processed/03_preprocessing/` |
 | 4. Régression du diamètre | `nasa-project/notebooks/04_diameter_regression.ipynb` | `nasa-project/reports/04_diameter/` et `nasa-project/data/processed/04_diameter/` |
 | 5. Classification et priorisation | `nasa-project/notebooks/05_classification.ipynb` | `nasa-project/reports/05_classification/` et `nasa-project/data/processed/05_classification/` |
+| 6. Clustering des profils de risque | `nasa-project/notebooks/06_clustering.ipynb` | `nasa-project/reports/06_clustering/` et `nasa-project/data/processed/06_clustering/` |
 
 Les notebooks se lancent **dans l'ordre** : à partir de l'étape 3, chaque notebook enregistre dans `nasa-project/data/processed/` (non versionné) les jeux train/test et les préprocesseurs utilisés par les étapes suivantes. Après un `git clone`, exécutez donc les notebooks dans l'ordre (03, puis 04, puis 05…).
 
@@ -196,3 +197,12 @@ Sur macOS et Linux, l'équivalent est `export UV_LINK_MODE=copy`, à ajouter dan
 - Sur le test : 99 % des PHA attrapés (5 ratés sur 508) en surveillant 33 % du catalogue, contre 73 % avec la règle « l'orbite croise celle de la Terre » et 99 % au hasard.
 - Avec l'orbite seule, il faut surveiller 72 % du catalogue pour le même rappel : l'essentiel du gain vient des variables d'observation, en partie parce qu'elles reflètent la taille.
 - Les PHA ratés sont presque tous des objets découverts depuis quelques jours ou semaines : ils doivent être surveillés systématiquement, quel que soit leur score.
+
+## Constats clés du clustering
+
+- K-Means sur quatre variables standardisées : log du diamètre (étape 4), log du MOID, inclinaison et excentricité. `pha` ne sert qu'à décrire les groupes après coup.
+- Choix des variables vérifié par corrélations et ACP : `a`, `q` et `ad` sont redondantes (r jusqu'à 0,98), et aucune des 4 variables retenues n'est superflue (3 composantes nécessaires pour dépasser 90 % de l'information). L'ACP sert à visualiser les clusters dans le plan CP1/CP2.
+- K = 4 retenu (silhouette ≈ 0,27). Les groupes se chevauchent, car les géocroiseurs forment un continuum, mais ils sont reproductibles (ARI ≈ 0,99 entre relances).
+- Les clusters ne redécouvrent pas les familles orbitales (ARI ≈ 0,08) : trois sur quatre mélangent Apollo et Amor à parts égales.
+- Le cluster des gros objets proches de l'écliptique contient 64 % des PHA du catalogue : il justifie une campagne de suivi prioritaire.
+- Le cluster des petits objets frôleurs (MOID médian 0,005 UA) contient 44 % d'objets passés ou attendus à moins de 5 distances lunaires, mais seulement 1 % de PHA : suivi réactif à la découverte.

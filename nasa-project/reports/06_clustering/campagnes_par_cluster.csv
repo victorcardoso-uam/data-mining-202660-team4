@@ -1,0 +1,5 @@
+cluster,profil,objets,diametre_median_m,moid_median_UA,inclinaison_mediane,part_PHA,part_de_tous_les_PHA,stratégie de suivi
+0,Petits objets frôleurs,11002,18.581614502359,0.00475,4.03,0.009725504453735684,0.04214257581725089,"Détectés surtout lors de passages très proches. Suivi réactif juste après la découverte, puis surveillance passive."
+1,Petits objets à distance modérée,10845,41.897904732487504,0.0465,11.29,0.022222222222222223,0.09491925955100433,Faible risque individuel. Surveillance passive par les relevés automatiques.
+2,Gros objets proches de l'écliptique,13288,162.87951876994288,0.07844999999999999,7.485,0.12229078868151716,0.6400157542339504,Réservoir principal de PHA. Campagne de suivi prioritaire et récurrente.
+3,Gros objets très inclinés,6015,383.3643401504456,0.17,28.47,0.0940980881130507,0.2229224103977944,"Gros mais loin en moyenne. Orbites peu accessibles : suivi astrométrique régulier, fenêtres d'observation spécifiques."
