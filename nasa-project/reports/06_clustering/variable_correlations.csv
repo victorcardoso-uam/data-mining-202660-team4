@@ -1,0 +1,8 @@
+,log10 diameter,log10 MOID,inclination i,eccentricity e,log10 a,perihelion q,log10 aphelion ad
+log10 diameter,1.0,0.66,0.45,0.3,0.35,0.11,0.35
+log10 MOID,0.66,1.0,0.4,-0.01,0.24,0.38,0.19
+inclination i,0.45,0.4,1.0,-0.05,-0.05,-0.01,-0.05
+eccentricity e,0.3,-0.01,-0.05,1.0,0.68,-0.36,0.82
+log10 a,0.35,0.24,-0.05,0.68,1.0,0.4,0.98
+perihelion q,0.11,0.38,-0.01,-0.36,0.4,1.0,0.22
+log10 aphelion ad,0.35,0.19,-0.05,0.82,0.98,0.22,1.0

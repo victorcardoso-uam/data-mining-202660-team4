@@ -1,0 +1,15 @@
+column(s),role,justification
+spkid / pdes / full_name / name,identifier,No physical information
+pha,target (dataset A),Label to predict
+moid_au / moid_km / moid_lunar_distances,excluded: direct leakage,MOID ≤ 0.05 AU threshold in the pha definition
+H,excluded: direct leakage (dataset A),H ≤ 22 threshold in the pha definition; allowed for dataset B
+diameter_km / diameter_m,excluded: derived from H (dataset A); target (dataset B),97% computed from H with albedo 0.14
+diameter_is_estimated,filter (dataset B),Used to keep measured diameters only
+size_category,excluded: derived from H,"Binned diameter, hence H"
+albedo,excluded: not available,Missing for 97% of objects; gives the diameter almost exactly when combined with H
+rot_per,excluded: not available,Missing for 95% of objects
+a / e / i / q / ad,kept (orbit),"Orbital elements, known for 100% of objects"
+class,"kept (orbit, categorical)","Orbital family (Apollo, Amor, Aten, Atira)"
+per / per_y / n,excluded: redundant,Functions of a (Kepler's third law)
+condition_code / data_arc_years / first_obs_year,variant: size proxy,"Available, but linked to size through detection bias (see section 2)"
+data_arc / first_obs / last_obs,excluded: redundant,Same information as data_arc_years and first_obs_year

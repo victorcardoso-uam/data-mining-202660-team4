@@ -1,0 +1,7 @@
+check,result
+Duplicate pdes (catalogue),0
+Duplicate designation + date (approaches),0
+Approaches matched to the catalogue,99.97% (8 unmatched)
+Distinct objects in the approaches,"20,886"
+Max |H catalogue − H approaches|,0.005
+Approach date range,2015-01-01 → 2035-12-29

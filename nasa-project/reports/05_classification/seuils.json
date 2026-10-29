@@ -1,8 +1,0 @@
-{
-  "recall_target": 0.99,
-  "thresholds": {
-    "Random Forest – Orbite + observation": 0.0547419418530119,
-    "Random Forest – Orbite": 0.06180374197962899
-  },
-  "chosen_model": "Random Forest – Orbite + observation"
-}
