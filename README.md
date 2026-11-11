@@ -133,8 +133,7 @@ Without uv: `pip install -r requirements.txt` then `streamlit run app.py` (Pytho
 
 | Path | Content |
 |---|---|
-| `app.py` | Entry point: page config, KPI cards, the 4 tabs |
-| `dashboard/` | One module per tab (`tab_explorer`, `tab_preprocessing`, `tab_benchmark`, `tab_whatif`) and shared cached loaders (`common.py`) |
+| `app.py` | The whole dashboard in one file: KPI cards + 4 tabs (Data Explorer, Preprocessing, Model Benchmark, What-If) |
 | `models/` | Serialized pipelines (`.joblib`: preprocessing + model), `benchmark.json` (test metrics, confusion matrices, ROC and loss curves) and `metadata.json` (features, thresholds, policy constants) |
 | `data/neo_catalogue.csv.gz` | One row per object: features, predicted diameter, PHA score, cluster, tier |
 | `.streamlit/config.toml` | Dark theme |
