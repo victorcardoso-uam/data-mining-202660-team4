@@ -121,6 +121,33 @@ Handy to regenerate all the figures of a step:
 uv run --with nbconvert jupyter nbconvert --to notebook --execute --inplace nasa-project/notebooks/02_eda.ipynb
 ```
 
+## Streamlit app (Milestone 3)
+
+The app only reads versioned artifacts, so it runs right after `git clone` + `uv sync`, without the raw data or the notebooks:
+
+```bash
+uv run streamlit run app.py
+```
+
+Without uv: `pip install -r requirements.txt` then `streamlit run app.py` (Python 3.14, same versions as `uv.lock`).
+
+| Path | Content |
+|---|---|
+| `app.py` | Entry point: page config, KPI cards, the 4 tabs |
+| `dashboard/` | One module per tab (`tab_explorer`, `tab_preprocessing`, `tab_benchmark`, `tab_whatif`) and shared cached loaders (`common.py`) |
+| `models/` | Serialized pipelines (`.joblib`: preprocessing + model), `benchmark.json` (test metrics, confusion matrices, ROC and loss curves) and `metadata.json` (features, thresholds, policy constants) |
+| `data/neo_catalogue.csv.gz` | One row per object: features, predicted diameter, PHA score, cluster, tier |
+| `.streamlit/config.toml` | Dark theme |
+| `requirements.txt` | Generated with `uv export --no-hashes --no-dev --no-emit-project --format requirements-txt -o requirements.txt` |
+
+To rebuild `models/` and `data/` (after running notebooks 03 to 07):
+
+```bash
+uv run python nasa-project/src/export_app_artifacts.py
+```
+
+The script reloads the notebook 05 Random Forest and the notebook 04 diameter model, trains the decision tree and the neural network (MLP 64→32, early stopping on validation loss) on the same split, refits the notebook 06 K-Means, and evaluates everything on the test set. Models are saved with their scikit-learn version pinned in `uv.lock`: loading them with another version can fail or change predictions.
+
 ## Activating the environment (optional)
 
 `uv run <command>` already uses the right environment, without activation. If you prefer to activate it:
