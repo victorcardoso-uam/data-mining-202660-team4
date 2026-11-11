@@ -1,0 +1,142 @@
+{
+  "features": {
+    "numeric": [
+      "a",
+      "e",
+      "i",
+      "q",
+      "ad",
+      "condition_code",
+      "data_arc_years",
+      "first_obs_year"
+    ],
+    "categorical": [
+      "class"
+    ],
+    "forbidden": [
+      "H",
+      "moid_au",
+      "moid_km",
+      "moid_lunar_distances",
+      "diameter_km",
+      "diameter_m",
+      "size_category",
+      "albedo"
+    ]
+  },
+  "target": "pha",
+  "models": {
+    "Random Forest": {
+      "file": "pha_random_forest.joblib",
+      "threshold": 0.0547419418530119
+    },
+    "Decision Tree": {
+      "file": "pha_decision_tree.joblib",
+      "threshold": 0.015271957014938834
+    },
+    "Neural Network (MLP)": {
+      "file": "pha_neural_network.joblib",
+      "threshold": 0.0016175002840701622
+    }
+  },
+  "chosen_model": "Random Forest",
+  "recall_target": 0.99,
+  "classes": [
+    "AMO",
+    "APO",
+    "ATE",
+    "IEO"
+  ],
+  "feature_ranges": {
+    "a": {
+      "p01": 0.7823599999999999,
+      "median": 1.679,
+      "p99": 3.0171999999999968
+    },
+    "e": {
+      "p01": 0.0663,
+      "median": 0.4482,
+      "p99": 0.8406
+    },
+    "i": {
+      "p01": 0.4180000000000001,
+      "median": 8.4,
+      "p99": 46.97199999999997
+    },
+    "q": {
+      "p01": 0.288,
+      "median": 0.962,
+      "p99": 1.287
+    },
+    "ad": {
+      "p01": 1.03,
+      "median": 2.41,
+      "p99": 5.04
+    },
+    "condition_code": {
+      "p01": 0.0,
+      "median": 7.0,
+      "p99": 9.0
+    },
+    "data_arc_years": {
+      "p01": 0.0,
+      "median": 0.06,
+      "p99": 36.398200000000145
+    },
+    "first_obs_year": {
+      "p01": 1988.0,
+      "median": 2018.0,
+      "p99": 2026.0
+    }
+  },
+  "missing_share_raw": {
+    "a": 0.0,
+    "e": 0.0,
+    "i": 0.0,
+    "q": 0.0,
+    "ad": 0.0,
+    "condition_code": 0.0,
+    "data_arc_years": 0.0098,
+    "first_obs_year": 0.0,
+    "class": 0.0,
+    "H": 0.0,
+    "moid_au": 0.0032,
+    "diameter_km": 0.0,
+    "albedo": 0.9708,
+    "rot_per": 0.9472
+  },
+  "raw_shape": [
+    41281,
+    30
+  ],
+  "extraction_date": "2026-03-25",
+  "diameter_interval_dex": [
+    -0.2872846090013318,
+    0.32986946943537737
+  ],
+  "diameter_h_limit": 24.67,
+  "kmeans_relabel": {
+    "0": 0,
+    "1": 1,
+    "2": 3,
+    "3": 2
+  },
+  "kmeans_features": [
+    "log10_diameter",
+    "log10_moid",
+    "inclination",
+    "eccentricity"
+  ],
+  "policy": {
+    "moid_max_au": 0.05,
+    "min_diameter_km": 0.14,
+    "urgent_approach_ld": 20,
+    "uncertain_condition_code": 7,
+    "recent_discovery_days": 365,
+    "density_kg_m3": 2600,
+    "escape_velocity_kms": 11.2,
+    "mt_tnt_j": 4184000000000000.0,
+    "lunar_distance_au": 0.00257
+  },
+  "v_inf_median_kms": 9.49353601501693
+}
