@@ -180,13 +180,21 @@ with tab4:
     # ---- Part A: the classifier --------------------------------------------
     with left:
         st.markdown("#### A · Is it a PHA? (machine learning)")
-        model_name = st.selectbox("Model", list(meta["models"]), key="model")
-        a = st.slider("Semi-major axis a (AU)", 0.6, 4.0, DEFAULTS["a"], 0.01, key="a")
-        e = st.slider("Eccentricity e", 0.0, 0.95, DEFAULTS["e"], 0.01, key="e")
-        i = st.slider("Inclination i (°)", 0.0, 60.0, DEFAULTS["i"], 0.5, key="i")
-        cc = st.slider("Orbit uncertainty (0 = precise, 9 = poor)", 0, 9, DEFAULTS["cc"], key="cc")
-        arc = st.slider("Years observed", 0.0, 50.0, DEFAULTS["arc"], 0.5, key="arc")
-        year = st.slider("Discovery year", 1950, 2025, DEFAULTS["year"], key="year")
+        model_name = st.selectbox("Model (which trained model makes the prediction)", list(meta["models"]), key="model",
+                                  help="Each model was trained on the same data and saved as a .joblib file.")
+        a = st.slider("Semi-major axis a (size of the orbit, AU)", 0.6, 4.0, DEFAULTS["a"], 0.01, key="a",
+                      help="Average distance from the Sun. 1 AU = Earth's distance from the Sun (150 million km).")
+        e = st.slider("Eccentricity e (how stretched the orbit is)", 0.0, 0.95, DEFAULTS["e"], 0.01, key="e",
+                      help="0 = circle, close to 1 = very elongated. A more stretched orbit comes closer to the Sun, "
+                           "and can cross Earth's orbit.")
+        i = st.slider("Inclination i (tilt of the orbit, °)", 0.0, 60.0, DEFAULTS["i"], 0.5, key="i",
+                      help="Angle between the asteroid's orbit and Earth's orbit. 0° = same plane as Earth.")
+        cc = st.slider("Orbit uncertainty (how well we know its path: 0 = precise, 9 = poor)", 0, 9, DEFAULTS["cc"], key="cc",
+                       help="NASA's condition code. A poorly known orbit (7 or more) needs urgent observation.")
+        arc = st.slider("Years observed (how long it has been tracked)", 0.0, 50.0, DEFAULTS["arc"], 0.5, key="arc",
+                        help="Time between the first and last observation. Long-tracked asteroids tend to be bigger.")
+        year = st.slider("Discovery year (when it was first seen)", 1950, 2025, DEFAULTS["year"], key="year",
+                         help="Big, bright asteroids were found first; recent discoveries are mostly small.")
 
         q, ad = a * (1 - e), a * (1 + e)   # closest and farthest distance from the Sun
         family = ("IEO" if ad < 0.983 else "ATE") if a < 1 else ("APO" if q < 1.017 else "AMO")
@@ -205,10 +213,15 @@ with tab4:
     # ---- Part B: size and speed -> impact energy and priority ---------------
     with right:
         st.markdown("#### B · How bad would an impact be? (physics)")
-        diam = st.slider("Diameter (m)", 10, 1000, DEFAULTS["diam"], 10, key="diam")
-        moid = st.slider("MOID: closest distance to Earth's orbit (AU)", 0.0, 0.3, DEFAULTS["moid"], 0.005, key="moid")
-        vinf = st.slider("Velocity relative to Earth (km/s)", 1.0, 40.0, DEFAULTS["vinf"], 0.5, key="vinf")
-        ld = st.slider("Closest approach before 2035 (Moon distances)", 0, 100, DEFAULTS["ld"], key="ld")
+        diam = st.slider("Diameter (width of the asteroid, m)", 10, 1000, DEFAULTS["diam"], 10, key="diam",
+                         help="140 m is the size limit of the official PHA rule. Impact energy grows with the cube of the size.")
+        moid = st.slider("MOID (closest distance between its orbit and Earth's orbit, AU)", 0.0, 0.3, DEFAULTS["moid"],
+                         0.005, key="moid",
+                         help="0.05 AU (about 7.5 million km, 19.5 Moon distances) is the distance limit of the PHA rule.")
+        vinf = st.slider("Velocity (how fast it approaches Earth, km/s)", 1.0, 40.0, DEFAULTS["vinf"], 0.5, key="vinf",
+                         help="Speed before Earth's gravity pulls it in. Earth adds 11.2 km/s at impact.")
+        ld = st.slider("Closest approach before 2035 (in Earth–Moon distances)", 0, 100, DEFAULTS["ld"], key="ld",
+                       help="How close it will actually pass Earth. 1 = 384,000 km. Below 20 counts as urgent.")
 
         p = meta["policy"]
         mass = p["density_kg_m3"] * (4 / 3) * np.pi * (diam / 2) ** 3            # kg
