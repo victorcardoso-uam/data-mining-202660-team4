@@ -51,6 +51,14 @@ meta = load_json("metadata.json")
 bench = load_json("benchmark.json")
 FEATURES = meta["features"]["numeric"] + meta["features"]["categorical"]
 
+
+@st.cache_data
+def scaled_features() -> pd.DataFrame:
+    """The catalogue after the preprocessing saved inside the Random Forest pipeline (scaling + one-hot)."""
+    prep = load_model(meta["models"]["Random Forest"]["file"]).named_steps["prep"]
+    data = load_data()
+    return pd.DataFrame(prep.transform(data[FEATURES]), columns=prep.get_feature_names_out(), index=data.index)
+
 # ---------------------------------------------------------------------------
 # Header and KPI cards
 # ---------------------------------------------------------------------------
@@ -117,12 +125,40 @@ with tab2:
     st.plotly_chart(fig)
     st.caption("`albedo` and `rot_per` are almost empty, so we dropped them instead of filling them.")
 
-    st.markdown("**Correlation matrix** (1 = move together, −1 = move in opposite directions)")
+    # ---- Feature scaling: before / after the StandardScaler saved in the .joblib model
+    st.markdown("**Feature scaling** (StandardScaler, loaded from the Random Forest's .joblib file)")
+    scaled = scaled_features()
+    feat = st.selectbox("Pick a variable", meta["features"]["numeric"], key="pp_feature")
+    keep = df[feat] <= df[feat].quantile(0.99)          # hide the 1% extreme values so the shape is visible
+    c1, c2 = st.columns(2)
+    fig = px.histogram(df[keep], x=feat, nbins=60, title=f"Before: raw {feat}")
+    c1.plotly_chart(fig, key="pp_raw")
+    fig = px.histogram(scaled[keep], x=feat, nbins=60, title=f"After: scaled {feat}", color_discrete_sequence=["#F08A3C"])
+    c2.plotly_chart(fig, key="pp_scaled")
+    st.caption(f"After scaling, {feat} has mean {round(scaled[feat].mean(), 2) + 0.0:.2f} and standard deviation {scaled[feat].std():.2f}: "
+               "every variable ends up on the same scale, so none dominates just because of its units. "
+               "Very skewed variables (a, ad, years observed) get a log first.")
+
+    # ---- One-hot encoding of the orbital family
+    st.markdown("**One-hot encoding** of the orbital family `class`")
+    examples = df.groupby("class").head(1)
+    onehot_cols = [c for c in scaled.columns if c.startswith("class_")]
+    st.dataframe(pd.concat([examples[["full_name", "class"]], scaled.loc[examples.index, onehot_cols].astype(int)], axis=1),
+                 hide_index=True)
+    st.caption("A model cannot read text, so each family becomes its own 0/1 column. "
+               "APO = Apollo, AMO = Amor, ATE = Aten, IEO = Atira.")
+
+    # ---- Interactive Pearson correlation heatmap
+    st.markdown("**Pearson correlation matrix** (1 = move together, −1 = move in opposite directions)")
     corr_cols = ["a", "e", "i", "q", "ad", "condition_code", "data_arc_years", "first_obs_year", "H", "pha"]
-    corr = df[corr_cols].astype(float).corr()
-    fig = px.imshow(corr, text_auto=".2f", color_continuous_scale="RdBu_r", zmin=-1, zmax=1)
-    fig.update_layout(height=550)
-    st.plotly_chart(fig)
+    picked = st.multiselect("Variables to include", corr_cols, default=corr_cols, key="pp_corr_cols")
+    if len(picked) >= 2:
+        corr = df[picked].astype(float).corr(method="pearson")
+        fig = px.imshow(corr, text_auto=".2f", color_continuous_scale="RdBu_r", zmin=-1, zmax=1)
+        fig.update_layout(height=550)
+        st.plotly_chart(fig, key="pp_corr")
+    else:
+        st.info("Pick at least two variables.")
 
 # ---------------------------------------------------------------------------
 # Tab 3 – Model benchmark
