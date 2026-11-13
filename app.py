@@ -247,3 +247,44 @@ with tab4:
             st.success("🟢 Tier 3 – routine: too far or too small to be a PHA.")
         st.caption("PHA rule: MOID ≤ 0.05 AU **and** diameter ≥ 140 m. Urgent: approach < 20 Moon distances "
                    "**or** orbit uncertainty ≥ 7. (Simplified version of the notebook 07 policy.)")
+
+    # ---- Priority list: the policy applied to the real catalogue -----------
+    st.divider()
+    st.subheader("📋 Priority list: real asteroids to observe")
+    st.write("Our 3-tier policy (notebook 07) applied to the whole catalogue: every asteroid gets a tier and a reason, "
+             "most urgent first. This is the observation plan we hand to the client.")
+    counts = df["tier"].value_counts()
+    c1, c2, c3 = st.columns(3)
+    c1.metric("🔴 Tier 1 · observe this cycle", f"{counts.get('Tier 1', 0):,}", border=True)
+    c2.metric("🟠 Tier 2 · next cycle", f"{counts.get('Tier 2', 0):,}", border=True)
+    c3.metric("🟢 Tier 3 · passive surveillance", f"{counts.get('Tier 3', 0):,}", border=True)
+
+    c1, c2 = st.columns([1, 2])
+    tier_pick = c1.selectbox("Show tier", ["Tier 1", "Tier 2", "Tier 3"], key="pl_tier")
+    search = c2.text_input("Or search an asteroid by name (all tiers)", key="pl_search", placeholder="e.g. 2002 TB70")
+    if search:
+        view = df[df["full_name"].str.contains(search.strip(), case=False, na=False, regex=False)]
+    else:
+        view = df[df["tier"] == tier_pick]
+    table = view.sort_values("rank").assign(
+        pha_proba=lambda d: d["pha_proba"] * 100,
+        closest_approach_date=lambda d: d["closest_approach_date"].astype(str).str[:10].replace("nan", ""))
+    st.dataframe(
+        table[["rank", "full_name", "tier", "pha", "pha_proba", "diameter_m", "moid_au", "closest_approach_date",
+               "closest_approach_LD", "impact_energy_Mt_high", "reasons"]].head(500),
+        hide_index=True, height=360,
+        column_config={
+            "rank": st.column_config.NumberColumn("Rank"),
+            "full_name": "Asteroid",
+            "tier": "Tier",
+            "pha": st.column_config.CheckboxColumn("Official PHA"),
+            "pha_proba": st.column_config.NumberColumn("Model probability", format="%.0f%%"),
+            "diameter_m": st.column_config.NumberColumn("Diameter (m)", format="%.0f"),
+            "moid_au": st.column_config.NumberColumn("MOID (AU)", format="%.3f"),
+            "closest_approach_date": "Closest approach",
+            "closest_approach_LD": st.column_config.NumberColumn("Distance (Moon distances)", format="%.1f"),
+            "impact_energy_Mt_high": st.column_config.NumberColumn("Impact energy, pessimistic (Mt TNT)", format="%.0f"),
+            "reasons": "Why this tier",
+        })
+    st.caption(f"{len(view):,} asteroids match (first 500 shown). Diameter is our regression estimate unless measured; "
+               "impact energy uses the pessimistic (upper-bound) diameter.")
