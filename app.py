@@ -76,6 +76,13 @@ with tab1:
     st.dataframe(df[["full_name", "pha", "a", "e", "i", "moid_au", "diameter_m", "condition_code"]].head(100),
                  hide_index=True, height=250)
 
+    st.markdown("**Summary statistics** (`df.describe()`)")
+    stats_cols = ["a", "e", "i", "moid_au", "diameter_m", "H", "condition_code", "data_arc_years", "first_obs_year"]
+    st.dataframe(df[stats_cols].describe().T.round(2))
+    st.caption("For each variable: how many values (count), the average (mean), the spread (std), the range (min/max) "
+               "and the quartiles. For example, the median asteroid is about 60 m wide, but the largest is about 38 km: "
+               "most near-Earth asteroids are small.")
+
     feature = st.selectbox("Pick a variable to see its distribution",
                            ["moid_au", "diameter_m", "a", "e", "i", "condition_code", "data_arc_years"])
     fig = px.histogram(df, x=feature, color="pha_label", color_discrete_map=PHA_COLORS,
