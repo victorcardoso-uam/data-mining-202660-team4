@@ -143,7 +143,7 @@ def main():
         Z_train, FIG_DIR / "task1_diag_poly2.png")
 
     metrics = pd.DataFrame(results).set_index("model")
-    diag = pd.DataFrame(diagnostics).T
+    diag = pd.DataFrame(diagnostics).T.astype({"shapiro_p": float, "n_high_leverage": int, "n_cooks_gt_4n": int})
     pd.set_option("display.width", 120)
     print("=== Holdout test metrics (20%) ===")
     print(metrics.round(4))

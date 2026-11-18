@@ -69,8 +69,9 @@ with st.sidebar:
     for f in ["best_model.joblib", "scaler.joblib", "regression_results.joblib",
               "ann_results.joblib", "dataset_summary.joblib"]:
         st.success(f"✅ models/{f}")
-    st.write(f"**ANN:** `{A['model'].__class__.__name__}` "
-             f"{A['model'].hidden_layer_sizes}, {A['model'].activation}")
+    mlp = A["model"].regressor_
+    st.write(f"**ANN:** `{mlp.__class__.__name__}` "
+             f"{mlp.hidden_layer_sizes}, {mlp.activation} (standardized target)")
     st.write(f"**Scaler:** `{A['scaler'].__class__.__name__}`")
 
 tab1, tab2, tab3, tab4 = st.tabs([
@@ -114,9 +115,12 @@ with tab2:
     m = R["metrics"].copy()
     ann_m = A["ann"]["metrics"]
     m.loc[ann_m["model"]] = [len(FEATURES), ann_m["R2"], ann_m["Adj_R2"], ann_m["MAE"], ann_m["RMSE"]]
-    st.dataframe(m.style.format(precision=4).highlight_min(subset=["MAE", "RMSE"], color="#c8f7c5")
+    m["n_predictors"] = m["n_predictors"].astype(int)
+    st.dataframe(m.style.format(precision=4, subset=["R2", "Adj_R2", "MAE", "RMSE"])
+                 .highlight_min(subset=["MAE", "RMSE"], color="#c8f7c5")
                  .highlight_max(subset=["R2", "Adj_R2"], color="#c8f7c5"), width="stretch")
-    st.info(f"Best regression model by test RMSE: **{R['best_model']}**")
+    st.info(f"Best model overall by test RMSE: **{m['RMSE'].idxmin()}** · "
+            f"best classical regression: **{R['best_model']}**")
     choice = st.selectbox("Residual diagnostic dashboard", list(R["figures"].keys()))
     st.image(str(ROOT / R["figures"][choice]), width="stretch")
     st.markdown("**Residual health checks (train residuals)**")
@@ -140,8 +144,7 @@ with tab3:
         st.line_chart(pd.DataFrame({"training loss": N["loss_curve"]}))
     with col_b:
         st.markdown("**Validation R² (early stopping monitor)**")
-        st.line_chart(pd.DataFrame({"validation R²": np.clip(N["validation_scores"], 0, 1)}))
-        st.caption("Clipped to [0, 1]; the first epochs start far below 0.")
+        st.line_chart(pd.DataFrame({"validation R²": N["validation_scores"]}))
     fig, ax = plt.subplots(figsize=(6, 4))
     ax.scatter(N["y_test"], N["y_pred"], alpha=0.6)
     lo, hi = min(N["y_test"].min(), N["y_pred"].min()), max(N["y_test"].max(), N["y_pred"].max())

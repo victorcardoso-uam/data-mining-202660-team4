@@ -2,6 +2,11 @@
 
 Saves models/best_model.joblib and models/scaler.joblib.
 
+The target is standardized too (TransformedTargetRegressor). Without it the
+network starts predicting ~0 for a target of ~10, so the first epochs only
+learn the mean (loss ~47) and the real signal (std 0.44) trains very slowly.
+best_model.joblib still predicts directly in L/min.
+
 Run:  python src/exam2_task2_ann.py
 """
 import joblib
@@ -10,6 +15,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.compose import TransformedTargetRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.neural_network import MLPRegressor
 from sklearn.preprocessing import StandardScaler
@@ -26,18 +32,22 @@ def main():
     scaler = StandardScaler().fit(X_train)  # fit on train only (no leakage)
     Xtr, Xte = scaler.transform(X_train), scaler.transform(X_test)
 
-    mlp = MLPRegressor(
-        hidden_layer_sizes=(64, 32),
-        activation="relu",
-        solver="adam",
-        early_stopping=True,
-        validation_fraction=0.1,
-        n_iter_no_change=20,
-        max_iter=2000,
-        random_state=RANDOM_STATE,
+    model = TransformedTargetRegressor(
+        regressor=MLPRegressor(
+            hidden_layer_sizes=(64, 32),
+            activation="relu",
+            solver="adam",
+            early_stopping=True,
+            validation_fraction=0.1,
+            n_iter_no_change=10,
+            max_iter=2000,
+            random_state=RANDOM_STATE,
+        ),
+        transformer=StandardScaler(),  # standardize y, predictions come back in L/min
     ).fit(Xtr, y_train)
+    mlp = model.regressor_  # the fitted MLPRegressor (loss_curve_, n_iter_, ...)
 
-    pred = mlp.predict(Xte)
+    pred = model.predict(Xte)
     r2 = r2_score(y_test, pred)
     metrics = {
         "model": "4. ANN MLP (64,32) ReLU",
@@ -54,7 +64,7 @@ def main():
         print(f"{k:>20}: {v:.4f}" if isinstance(v, float) else f"{k:>20}: {v}")
 
     fig, ax1 = plt.subplots(figsize=(10, 5.5))
-    ax1.plot(mlp.loss_curve_, label="Training loss (MSE/2)", color="tab:blue")
+    ax1.plot(mlp.loss_curve_, label="Training loss (MSE/2, standardized y)", color="tab:blue")
     ax1.set(xlabel="Epoch", ylabel="Training loss",
             title="MLPRegressor (64, 32) ReLU - Loss Convergence")
     ax2 = ax1.twinx()
@@ -70,7 +80,7 @@ def main():
     fig.savefig(FIG_DIR / "task2_loss_curve.png", dpi=130)
     plt.close(fig)
 
-    joblib.dump(mlp, MODELS_DIR / "best_model.joblib")
+    joblib.dump(model, MODELS_DIR / "best_model.joblib")
     joblib.dump(scaler, MODELS_DIR / "scaler.joblib")
     joblib.dump({
         "metrics": metrics,
